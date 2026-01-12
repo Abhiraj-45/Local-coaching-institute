@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | ABC Coaching</title>
+    <script>
+        const role = localStorage.getItem('user_role');
+        const token = localStorage.getItem('user_token');
+        if (!token || role !== 'admin') {
+            alert("Access Denied! Only Admins can view this page.");
+            window.location.href = 'index.html';
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f0f2f5; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        /* Header Styling */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00b894; padding-bottom: 20px; margin-bottom: 20px; }
+        h1 { color: #2c3e50; margin: 0; }
+        
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .btn-excel { background-color: #27ae60; } /* Green for Excel */
+        .btn-excel:hover { background-color: #219150; }
+        .btn-home { background-color: #2980b9; }
+        .btn-logout { background-color: #c0392b; }
+
+        /* Stats Card */
+        .stats-card {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white; padding: 20px; border-radius: 8px;
+            display: inline-block; margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+        }
+        .stats-card h3 { margin: 0; font-size: 36px; }
+        .stats-card p { margin: 0; opacity: 0.9; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #2c3e50; color: white; padding: 15px; text-align: left; }
+        td { padding: 15px; border-bottom: 1px solid #ddd; color: #555; vertical-align: middle; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        .course-img { width: 40px; height: 40px; border-radius: 50%; vertical-align: middle; margin-right: 10px; border: 2px solid #ddd; }
+        .delete-btn { background-color: #ff7675; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        .delete-btn:hover { background-color: #d63031; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📋 Student Enquiries</h1>
+                <p style="color: #7f8c8d; margin-top: 5px;">Manage all your leads here</p>
+            </div>
+            <div class="btn-group">
+                <button onclick="exportToExcel()" class="btn btn-excel">
+                    📥 Download Excel
+                </button>
+                <a href="index.html" class="btn btn-home">🏠 Website</a>
+                <button onclick="logout()" class="btn btn-logout">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3 id="total-count">0</h3>
+            <p>Total Enquiries</p>
+        </div>
+        
+        <table id="enquiryTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Course Interest</th>
+                    <th>Message</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Images for courses
+        const courseImages = {
+            "8-10": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=100&q=80",
+            "11-12-sci": "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=100&q=80",
+            "maths-special": "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=100&q=80",
+            "default": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+        };
+
+        // Load Data
+        async function loadEnquiries() {
+            const tableBody = document.getElementById('table-body');
+            const countDisplay = document.getElementById('total-count');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/enquire');
+                const enquiries = await response.json();
+                
+                // Update Counter
+                countDisplay.innerText = enquiries.length;
+
+                tableBody.innerHTML = '';
+
+                if(enquiries.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No enquiries found yet.</td></tr>';
+                    return;
+                }
+
+                enquiries.forEach(student => {
+                    const row = document.createElement('tr');
+                    const imgSrc = courseImages[student.course] || courseImages['default'];
+                    const date = new Date(student.date).toLocaleDateString();
+
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td><strong>${student.name}</strong></td>
+                        <td>${student.phone}</td>
+                        <td><img src="${imgSrc}" class="course-img">${student.course}</td>
+                        <td>${student.message}</td>
+                        <td><button class="delete-btn" onclick="deleteEnquiry('${student._id}')">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) { console.error("Error:", error); }
+        }
+
+        // Delete Function
+        async function deleteEnquiry(id) {
+            if(confirm("Are you sure you want to delete this enquiry?")) {
+                await fetch(`http://localhost:5000/api/enquire/${id}`, { method: 'DELETE' });
+                loadEnquiries(); 
+            }
+        }
+
+        // --- NEW: EXPORT TO EXCEL LOGIC ---
+        function exportToExcel() {
+            let table = document.getElementById("enquiryTable");
+            let rows = table.rows;
+            let csv = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                // Last column (Delete button) ko skip karne ke liye loop length-1 tak chalaya
+                for (let j = 0; j < cols.length - 1; j++) {
+                    // Clean up text (remove newlines and extra spaces)
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
+                    row.push('"' + data + '"'); // Add quotes for CSV format
+                }
+                csv.push(row.join(","));
+            }
+
+            // Download Link Create karna
+            let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            let downloadLink = document.createElement("a");
+            downloadLink.download = "ABC_Coaching_Leads.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        loadEnquiries();
+    </script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Coaching Institute | Surat</title>
+    
+    <script>
+        if (!localStorage.getItem('user_token')) {
+            window.location.href = 'signup.html';
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* --- NAVIGATION BUTTON STYLES --- */
+        .nav-btn {
+            padding: 8px 18px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            color: white !important; /* Force White Text for all buttons */
+        }
+
+        /* 1. Admin Button (NOW SOLID ORANGE) */
+        .btn-admin {
+            background-color: #ff7675; /* Solid Orange/Red */
+        }
+        .btn-admin:hover {
+            background-color: #d63031;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(214, 48, 49, 0.4);
+        }
+
+        /* 2. Courses Button (Blue) */
+        .btn-courses {
+            background-color: #0984e3;
+        }
+        .btn-courses:hover {
+            background-color: #74b9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(9, 132, 227, 0.4);
+        }
+
+        /* 3. Enquire Button (Green) */
+        .btn-enquire {
+            background-color: #00b894;
+        }
+        .btn-enquire:hover {
+            background-color: #019e7f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 184, 148, 0.4);
+        }
+
+        /* 4. Logout Button (Grey/Dark) */
+        .btn-logout {
+            background-color: #636e72;
+        }
+        .btn-logout:hover {
+            background-color: #2d3436;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(45, 52, 54, 0.4);
+        }
+
+        /* Floating WhatsApp Button */
+        .whatsapp-float {
+            position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px;
+            background-color: #25d366; color: #FFF; border-radius: 50px;
+            text-align: center; font-size: 30px; box-shadow: 2px 2px 3px #999;
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.3s;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); background-color: #20b957; }
+
+        /* Live Clock */
+        .live-clock {
+            font-family: 'Courier New', monospace; font-weight: bold; color: #2c3e50;
+            background: #dfe6e9; padding: 5px 12px; border-radius: 5px; margin-right: 15px;
+            border: 1px solid #b2bec3; display: flex; align-items: center; gap: 8px;
+        }
+        .live-clock i { color: #00b894; }
+
+        /* --- HERO SLIDER --- */
+        .swiper { width: 100%; height: 85vh; }
+        .swiper-slide { background-size: cover; background-position: center; position: relative; }
+        
+        .slide-overlay {
+            background: rgba(0, 0, 0, 0.6); /* Slightly darker overlay for better text visibility */
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: white;
+        }
+        
+        .slide-overlay h2 { 
+            font-size: 3.5rem; 
+            margin-bottom: 20px; 
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8); /* Strong shadow */
+        }
+        
+        /* UPDATED: Small Text Styling */
+        .slide-overlay p { 
+            font-size: 1.3rem; 
+            margin-bottom: 30px; 
+            max-width: 700px;
+            color: #ffffff !important; /* FORCE WHITE */
+            font-weight: 500; /* Thicker text */
+            text-shadow: 2px 2px 5px rgba(0,0,0,1); /* Black shadow behind text to make it pop */
+            letter-spacing: 0.5px;
+        }
+
+        .slide-btn {
+            padding: 12px 30px; background: #00b894; color: white; border: none;
+            font-size: 18px; border-radius: 5px; cursor: pointer; transition: 0.3s;
+        }
+        .slide-btn:hover { background: #00a884; transform: scale(1.05); }
+
+        /* Batch Info */
+        .batch-info { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
+        .batch-info h4 { font-size: 14px; color: #00b894; margin-bottom: 8px; font-weight: 600; }
+        .batch-list { list-style: none; padding: 0; margin: 0; }
+        .batch-list li { font-size: 13px; color: #555; margin-bottom: 5px; display: flex; align-items: center; }
+        .batch-list li i { margin-right: 8px; color: #fdcb6e; }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;
+            margin: 20px; border-top: 4px solid #00b894;
+        }
+        .student-img {
+            width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
+            margin-bottom: 15px; border: 3px solid #eee;
+        }
+        .stars { color: #f1c40f; margin-bottom: 10px; }
+        .quote { font-style: italic; color: #666; font-size: 14px; }
+        .student-name { margin-top: 15px; font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+<nav style="position: absolute; top: 0; width: 100%; z-index: 100; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0;">
+        <h1 style="margin: 0; color: #2c3e50;"><i class="fas fa-graduation-cap"></i> ABC Coaching</h1>
+        
+        <ul class="nav-links" style="display: flex; gap: 15px; align-items: center; list-style: none; margin: 0; padding: 0;">
+            <li>
+                <div class="live-clock">
+                    <i class="far fa-clock"></i> <span id="clock-display">00:00:00 AM</span>
+                </div>
+            </li>
+
+            <li>
+                <a href="#" onclick="checkAdmin()" class="nav-btn btn-admin">
+                    Admin Panel
+                </a>
+            </li>
+
+            <li>
+                <a href="#courses" class="nav-btn btn-courses">
+                    Courses
+                </a>
+            </li>
+
+            <li>
+                <a href="#contact" class="nav-btn btn-enquire">
+                    Enquire Now
+                </a>
+            </li>
+
+            <li>
+                <button onclick="logout()" class="nav-btn btn-logout">
+                    Logout
+                </button>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80');">
+            <div class="slide-overlay">
+                <h2 data-aos="fade-up">Empowering Future Leaders</h2>
+                <p data-aos="fade-up" data-aos-delay="100">Join the best coaching institute in Surat for Class 8 to 12.</p>
+                <button class="slide-btn" onclick="scrollToSection('contact')">Book a Demo Class</button>
+            </div>
+        </div>
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1600&q=80');">
+            <div class="slide-overlay">
+                <h2>State of the Art Library</h2>
+                <p>Focus on your studies in our peaceful and well-equipped library.</p>
+                <button class="slide-btn" onclick="scrollToSection('courses')">Explore Courses</button>
+            </div>
+        </div>
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80');">
+            <div class="slide-overlay">
+                <h2>Proven Results</h2>
+                <p>Our students consistently top Board Exams and Entrance Tests.</p>
+                <button class="slide-btn" onclick="scrollToSection('contact')">Join Toppers League</button>
+            </div>
+        </div>
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+</div>
+
+<div class="container main-content">
+    
+    <section id="courses" class="section-padding">
+        <div class="section-header" data-aos="fade-right">
+            <h2>Our Courses & Batches</h2>
+            <div class="underline"></div>
+            <p>Clear Syllabus Coverage & Convenient Timings</p>
+        </div>
+        
+        <div class="grid-container">
+            <div class="card" data-aos="flip-left" data-aos-duration="1000">
+                <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=500&q=80" alt="High School"></div>
+                <div class="card-body">
+                    <h3>High School Foundation (8-10)</h3>
+                    <p>Maths, Science, English, SST. NCERT coverage.</p>
+                    <div class="batch-info">
+                        <h4><i class="far fa-clock"></i> Batches:</h4>
+                        <ul class="batch-list"><li><i class="fas fa-sun"></i> Morning: 7:00 AM - 9:00 AM</li><li><i class="fas fa-moon"></i> Evening: 4:00 PM - 6:00 PM</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-aos="flip-left" data-aos-delay="200" data-aos-duration="1000">
+                <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=500&q=80" alt="Science"></div>
+                <div class="card-body">
+                    <h3>Science (11th - 12th)</h3>
+                    <p>Physics, Chemistry, Maths/Biology. JEE/NEET prep.</p>
+                    <div class="batch-info">
+                        <h4><i class="far fa-clock"></i> Batches:</h4>
+                        <ul class="batch-list"><li><i class="fas fa-sun"></i> Morning: 6:30 AM - 9:30 AM</li><li><i class="fas fa-moon"></i> Evening: 5:00 PM - 8:00 PM</li></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-aos="flip-left" data-aos-delay="400" data-aos-duration="1000">
+                <div class="card-img-wrapper"><img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=500&q=80" alt="Maths"></div>
+                <div class="card-body">
+                    <h3>Maths Special</h3>
+                    <p>Advanced problem solving and competitive tricks.</p>
+                    <div class="batch-info">
+                        <h4><i class="far fa-clock"></i> Batches:</h4>
+                        <ul class="batch-list"><li><i class="fas fa-star"></i> Weekend: Sat-Sun 4 PM</li><li><i class="fas fa-moon"></i> Night: 8:30 PM - 9:30 PM</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="section-padding" style="background-color: #f9f9f9; border-radius: 10px;">
+        <div class="section-header" data-aos="fade-up">
+            <h2>What Students Say</h2>
+            <div class="underline"></div>
+        </div>
+        <div class="swiper testimonialSwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="testimonial-card">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="student-img" alt="Student">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"Rahul Sir's teaching style is amazing. I scored 95% in Maths thanks to ABC Coaching!"</p>
+                        <p class="student-name">- Amit Patel, Class 10</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="testimonial-card">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="student-img" alt="Student">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                        <p class="quote">"The study material and weekly tests really helped me prepare for JEE Mains."</p>
+                        <p class="student-name">- Priya Sharma, Class 12</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="testimonial-card">
+                        <img src="https://randomuser.me/api/portraits/men/86.jpg" class="student-img" alt="Student">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"Best environment for studies in Surat. The library facility is very useful."</p>
+                        <p class="student-name">- Rohan Mehta, Class 11</p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <section id="contact" class="section-padding">
+        <div class="section-header" data-aos="zoom-in">
+            <h2>Visit Us & Get In Touch</h2>
+            <div class="underline"></div>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-info-wrapper" data-aos="fade-right">
+                <div class="info-box">
+                    <i class="fas fa-map-marker-alt icon-accent"></i>
+                    <div><h4>Our Location</h4><p>101, Knowledge Hub, Vesu Main Road, Surat, Gujarat</p></div>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-phone-alt icon-accent"></i>
+                    <div><h4>Contact Details</h4><p style="font-size: 1.1em; font-weight: bold; color: #2c3e50;">ABC Coaching</p><p style="font-size: 1.2em; color: #00b894; font-weight: bold;">+91 96089 50415</p></div>
+                </div>
+                <div class="map-container" style="margin-top: 20px;"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.236681691361!2d72.7755!3d21.1458!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDA4JzQ0LjkiTiA3MsKwNDYnMzEuOCJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" width="100%" height="300" style="border:0; border-radius: 8px;" allowfullscreen="" loading="lazy"></iframe></div>
+            </div>
+            <div class="form-wrapper" data-aos="fade-left">
+                <h3>Quick Enquiry Form</h3>
+                <p>Fill this form and our counselor will call you back.</p>
+                <form id="enquiryForm">
+                    <div class="form-group"><i class="fas fa-user"></i><input type="text" id="name" placeholder="Student Name" required></div>
+                    <div class="form-group"><i class="fas fa-phone"></i><input type="tel" id="phone" placeholder="Mobile Number" required></div>
+                    <div class="form-group"><i class="fas fa-book-open"></i><select id="course" required><option value="" disabled selected>I am interested in...</option><option value="8-10">Class 8-10</option><option value="11-12-sci">Class 11-12 Science</option><option value="maths-special">Maths Special</option></select></div>
+                    <div class="form-group"><textarea id="message" rows="4" placeholder="Any query?"></textarea></div>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<a href="https://wa.me/919608950415" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+<footer><p>© 2026 ABC Coaching Institute, Surat.</p></footer>
+
+<script src="script.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    AOS.init();
+    var swiper = new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true }, navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" } });
+    var testimonialSwiper = new Swiper(".testimonialSwiper", { loop: true, autoplay: { delay: 3000 }, pagination: { el: ".swiper-pagination", clickable: true }, slidesPerView: 1, breakpoints: { 768: { slidesPerView: 2, spaceBetween: 20 }, 1024: { slidesPerView: 3, spaceBetween: 30 } } });
+
+    function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('clock-display').innerText = timeString;
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior: 'smooth'}); }
+    
+    function checkAdmin() {
+        const role = localStorage.getItem('user_role');
+        if (role === 'admin') window.location.href = 'admin.html';
+        else alert("⚠️ Access Denied!\nOnly Admin can access this panel.");
+    }
+    
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+</script>
+</body>
+</html>
